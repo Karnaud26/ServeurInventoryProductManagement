@@ -2,6 +2,7 @@ package com.sipm.invm.controller;
 
 import com.sipm.invm.entity.Product;
 import com.sipm.invm.service.IProductService;
+import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +16,17 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("api/product")
+@RequestMapping("/api")
+//@Api(tags = {"ProductController"})
 @CrossOrigin
 public class ProductController {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+    //public static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     private IProductService iProductService;
 
-    @GetMapping()
+    @GetMapping("/product")
     public List<Product> getProducts(){
         return iProductService.getProducts();
     }
@@ -41,12 +43,13 @@ public class ProductController {
     }*/
     /**
      * Recherche un produit dans la base de données en fonction de son numéro de ref. Si le produit n'est pas retrouvé, on retourne le Statut HTTP NO_CONTENT.
-     * @param productDTORequest
+     * @param product
      * @return
      */
     @PostMapping("/addProduct")
-    public void addProduct(@RequestBody Product productDTORequest){
-        iProductService.addProduct(productDTORequest);
+    public void addProduct(@RequestBody Product product){
+        //System.out.println("hello here " + product.getQty());
+        iProductService.addProduct(product);
     }
 
     /**
@@ -71,7 +74,7 @@ public class ProductController {
      * @param ref
      * @return
      */
-    @DeleteMapping("/deleteCustomer/{ref}")
+    @DeleteMapping("/deleteCustomer/{*}")
     public ResponseEntity<String> deleteProduct(@PathVariable String ref){
         iProductService.deleteProduct(ref);
         return new ResponseEntity<String>(HttpStatus.NO_CONTENT);

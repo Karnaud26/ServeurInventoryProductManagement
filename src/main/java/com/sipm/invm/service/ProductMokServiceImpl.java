@@ -13,9 +13,9 @@ public class ProductMokServiceImpl implements IProductService {
     private List<Product> products;
     public ProductMokServiceImpl(){
         products = new ArrayList<>();
-        products.add(Product.getInstance("100A","Livre",50,25));
-        products.add(Product.getInstance("200B","Cahier",3,25.5));
-        products.add(Product.getInstance("300C","Stylo",10,25.8));
+        products.add(new Product ("100A","Livre",50,25));
+        products.add(new Product ("200B","Cahier",3,25.5));
+        products.add(new Product ("300C","Stylo",10,25.8));
     }
     @Override
     public List<Product> getProducts() {

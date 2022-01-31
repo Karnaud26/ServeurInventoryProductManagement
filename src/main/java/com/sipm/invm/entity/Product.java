@@ -11,13 +11,13 @@ public class Product implements Serializable {
     private String ref;
     private String name;
     private double qty;
-    private double unitprice;
+    private double unitPrice;
 
     private static Product instance;
 
-    public static Product getInstance(String ref, String name, double qty, double unitprice){
+    public static Product getInstance(String ref, String name, double qty, double unitPrice){
         if (instance == null)
-            instance = new Product(ref,name,qty,unitprice);
+            instance = new Product(ref,name,qty,unitPrice);
         return instance;
     }
 
@@ -27,11 +27,11 @@ public class Product implements Serializable {
         return instance;
     }
 
-    private Product(String ref, String name, double qty, double unitprice) {
+    public Product(String ref, String name, double qty, double unitPrice) {
         this.ref = ref;
         this.name = name;
         this.qty = qty;
-        this.unitprice = unitprice;
+        this.unitPrice = unitPrice;
     }
 
     private Product() {
@@ -49,20 +49,20 @@ public class Product implements Serializable {
         return qty;
     }
 
-    public double getUnitprice() {
-        return unitprice;
+    public double getUnitPrice() {
+        return unitPrice;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setQty(float qty) {
+    public void setQty(double qty) {
         this.qty = qty;
     }
 
-    public void setUnitprice(float unitprice) {
-        this.unitprice = unitprice;
+    public void setUnitprice(double unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public void setRef(String ref) {
