@@ -1,16 +1,12 @@
 package com.sipm.invm.service;
 
-import com.sipm.invm.entity.Product;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 @Service
 //@Transactional
-public class ProductMokServiceImpl implements IProductService {
+public class ProductMokServiceImpl  {
 
-    private List<Product> products;
+    /*private List<Product> products;
     public ProductMokServiceImpl(){
         products = new ArrayList<>();
         products.add(new Product ("100A","Livre",50,25));
@@ -36,19 +32,21 @@ public class ProductMokServiceImpl implements IProductService {
     }
 
     @Override
-    public void deleteProduct(String ref) {
+    public void deleteProduct(Integer ref) {
         Product product = Product.getInstance();
-        product.setRef(ref);
+        product.setId(ref);
         products.remove(product);
     }
 
-    @Override
-    public Optional<Product> getproductByRef(final String ref) {
+    /*@Override
+    public Optional<Product> getProductByRef(final String ref) {
         return products.stream().filter(row -> row.getRef().equals(ref)).findAny();
     }
 
     @Override
-    public boolean checkIfIdExists(String ref) {
-        return (products.stream().filter(row -> row.getRef().equalsIgnoreCase(ref) && row.getRef().contains(ref)).count() == 0);
-    }
+    public boolean checkIfIdExists(Integer Id) {
+        return false;
+    }*/
+
+
 }

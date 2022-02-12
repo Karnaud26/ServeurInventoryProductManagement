@@ -1,55 +1,83 @@
 package com.sipm.invm.controller;
 
 import com.sipm.invm.entity.Product;
+import com.sipm.invm.exception.ProductAlreadyExistsException;
+import com.sipm.invm.exception.ProductNotFoundException;
 import com.sipm.invm.service.IProductService;
 import io.swagger.annotations.Api;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
-//@Api(tags = {"ProductController"})
+@Api(tags = {"ProductController"})
 @CrossOrigin
 public class ProductController {
 
-    //public static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
-    @Autowired
-    private IProductService iProductService;
+    private final IProductService iProductService;
+
+    public ProductController(IProductService iProductService){
+        this.iProductService =  iProductService;
+    }
 
     @GetMapping("/product")
-    public List<Product> getProducts(){
-        return iProductService.getProducts();
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<Product>> getProducts(){
+        return ResponseEntity.ok().body(iProductService.getProducts());
     }
     /**
      * Recherche un produit dans la base de données en fonction de son numéro de ref. Si le produit n'est pas retrouvé, on retourne le Statut HTTP NO_CONTENT.
      * @param ref
      * @return
      */
-     /*@GetMapping("/{ref}")
+    /*@GetMapping("/{ref}")
     public ResponseEntity<Product> getProductByRef(String ref){
-       Product product = iProductService.getproductByRef(ref);
+       Product product = iProductService.(ref);
         return iProductService.getproductByRef(ref);
 
     }*/
+
+    /**
+     * Recherche un produit dans la base de données en fonction de son numéro de ref. Si le produit n'est pas retrouvé, on retourne le Statut HTTP NO_CONTENT.
+     * @param id
+     * @return
+     */
+    @GetMapping("/productdetails/{id}")
+    public ResponseEntity<Product> findProductById(@PathVariable Integer id){
+        try{
+            return ResponseEntity.ok().body(iProductService.findProductById(id));
+        }catch (ProductNotFoundException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
+
+    }
+
     /**
      * Recherche un produit dans la base de données en fonction de son numéro de ref. Si le produit n'est pas retrouvé, on retourne le Statut HTTP NO_CONTENT.
      * @param product
      * @return
      */
     @PostMapping("/addProduct")
-    public void addProduct(@RequestBody Product product){
-        //System.out.println("hello here " + product.getQty());
-        iProductService.addProduct(product);
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        try{
+            Product product1 = iProductService.addProduct(product);
+            /*URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(product1.getId())
+                    .toUri();*/
+            return new ResponseEntity<Product>(product1,HttpStatus.CREATED);
+
+        }catch (ProductAlreadyExistsException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.CONFLICT);
+        }
     }
 
     /**
@@ -57,39 +85,25 @@ public class ProductController {
      * @param product
      * @return
      */
-    @PutMapping("/updateProduct")
-    public ResponseEntity<Product> updateProduct(@RequestBody Product product){
-        if(!iProductService.checkIfIdExists(product.getRef()))
-            return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
-        Product productRequest = this.mapProductDTOToProduct(product);
-        Product ProductResponse =  iProductService.updateProduct(productRequest);
-        if (!ProductResponse.toString().isEmpty() || ProductResponse != null){
-            return new ResponseEntity<Product>(ProductResponse,HttpStatus.OK);
+    @PutMapping("/updateproduct")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
+        try{
+            return ResponseEntity.ok().body(iProductService.updateProduct(product));
+        }catch (ProductNotFoundException ex){
+            System.out.println(ex.getMessage());
+            return new ResponseEntity(ex.getMessage(),HttpStatus.NOT_FOUND);
         }
-        return  new ResponseEntity<Product>(HttpStatus.NOT_MODIFIED);
     }
 
     /**
      * Supprime un produit dans la base de données. Si le produit n'est pas retrouvé, on retourne le Statut HTTP NO_CONTENT.
-     * @param ref
+     * @param id
      * @return
      */
-    @DeleteMapping("/deleteCustomer/{*}")
-    public ResponseEntity<String> deleteProduct(@PathVariable String ref){
-        iProductService.deleteProduct(ref);
+    @DeleteMapping("/deleteproduct/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Integer id) throws ProductNotFoundException{
+        iProductService.deleteProduct(id);
         return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
     }
-
-    /**
-     * Transforme un POJO ProductDTO en une entity Product
-     *
-     * @param productDTO
-     * @return
-     */
-    private Product mapProductDTOToProduct(Product productDTO) {
-        ModelMapper modelMapper = new ModelMapper();
-        Product product = modelMapper.map(productDTO,Product.class);
-        return product;
-    }
-
 }
